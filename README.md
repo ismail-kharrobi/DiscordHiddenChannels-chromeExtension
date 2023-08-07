@@ -3,14 +3,13 @@
 
 ##### Chrome extension that makes you able to see all channels in a server even when you don't have permission on it but of course you can't see the content of that channels
 
-### __________________________________________________________
 
 ![logo](https://user-images.githubusercontent.com/78050205/258658696-5069f652-7206-4f28-822f-4e3da1ae3a3f.png)
 
 
 ## Installation
 
-The extension is available in chrome extension store [Store](test)
+The extension is available in chrome extension store [Store](chrome.google.com/webstore/detail/extrachannels-discord-too/ahheohmnbgdjaachcbogbdagoldaddlj/related)
 ## How to use
 
 #### after installing the tool an icon will appear, it's possible to get it ON only if you are in discord tab
