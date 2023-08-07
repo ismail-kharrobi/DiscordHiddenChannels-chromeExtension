@@ -9,7 +9,7 @@
 
 ## Installation
 
-The extension is available in chrome extension store [Store](chrome.google.com/webstore/detail/extrachannels-discord-too/ahheohmnbgdjaachcbogbdagoldaddlj/related)
+The extension is available in chrome extension  [Store](chrome.google.com/webstore/detail/extrachannels-discord-too/ahheohmnbgdjaachcbogbdagoldaddlj/related)
 ## How to use
 
 #### after installing the tool an icon will appear, it's possible to get it ON only if you are in discord tab
