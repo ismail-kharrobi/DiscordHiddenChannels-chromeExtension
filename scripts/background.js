@@ -48,14 +48,6 @@ async function getTabInfo(tabId){
             if (checkexists == null) {
               const getnav = document.querySelector(".toolbar-3_r2xA")
               getnav.insertAdjacentHTML("afterbegin",component)
-              const buttonSelector = ".icon-2xnN2Y"; 
-              function handleClick() {
-                chrome.runtime.sendMessage({ action: "showModal" });
-              }
-              const button = document.querySelector(buttonSelector);
-              if (button) {
-                button.addEventListener("click", handleClick);
-              }
             }
           },
           args : [component]
@@ -95,7 +87,6 @@ chrome.runtime.onInstalled.addListener(async () => {
 
 
 chrome.action.onClicked.addListener(async (tab) => {
-  if (tab.url.startsWith(domain)) {
    
       await chrome.storage.sync.get("state").then((result) => {
         if (result.state) {
@@ -130,7 +121,6 @@ chrome.action.onClicked.addListener(async (tab) => {
         }        
       });
     }
-  }
 })
 
 chrome.webNavigation.onHistoryStateUpdated.addListener(async function (details) {
@@ -147,11 +137,6 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(async function (details) 
           if (checkexists == null) {
             const getnav = document.querySelector(".toolbar-3_r2xA")
             getnav.insertAdjacentHTML("afterbegin",component)
-            const buttonSelector = ".icon-2xnN2Y"; 
-            const button = document.querySelector(buttonSelector);
-            if (button) {
-              button.addEventListener("click", handleClick);
-            }
           }
         },
         args : [component]
@@ -161,6 +146,12 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(async function (details) 
 })
 
 const getChannels = async(s) => {
+  const url = await chrome.scripting.executeScript({
+    target: { tabId: s.id },
+    func: ()  => {
+      return JSON.stringify(window.location.toString())
+    }
+  }); 
   var token;
   await chrome.storage.session.get("auth").then((result) => {
     if (result.auth) {
