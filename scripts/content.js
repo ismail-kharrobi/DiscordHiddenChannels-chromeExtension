@@ -7,14 +7,47 @@ document.head.appendChild(script);
 function handleButtonClick(event) {
     if (event.srcElement && (event.srcElement.attributes.length > 0 && event.srcElement.attributes[0].nodeValue === "hover:fill-cyan-500") || (event.srcElement.attributes.length > 1 && event.srcElement.attributes[1].nodeValue === "hover:fill-cyan-500")) {
       (async () => {
-        let myres =  await chrome.runtime.sendMessage({response:"getChannels"});
-        const to_add = document.querySelector("body")
-
+      let myres =  await chrome.runtime.sendMessage({response:"getChannels"});
+      const to_add = document.querySelector("body")
+      var dom;
+       console.log(myres)
+        if (myres && myres.channels && myres.channels.message && myres.channels.message === "401: Unauthorized")
+        {
+            dom = `
+            <div id="overlay" class="fixed z-[101] w-screen h-screen inset-0 bg-gray-900 bg-opacity-60"></div>
+    
+             <div id="dialog"
+              class="fixed z-[102] top-1/2 left-1/2 -translate-x-1/2 h-5/6 -translate-y-1/2 w-96 bg-black rounded-md px-8 py-6 space-y-5 drop-shadow-lg text-black">
+              <div class="flex justify-start">
+                  <button id="close" class="px-3 py-1 bg-indigo-500 hover:bg-indigo-700 text-white dark: cursor-pointer rounded-md">X</button>
+              </div>
+              <h1 class="text-2xl font-semibold text-white">Channels</h1>
+                <div class="scroller-1ox3I2 h-5/6 thin-RnSY0a scrollerBase-1Pkza4 fade-27X6bG customTheme-3QAYZq" orientation="vertical" id="channels" tabindex="0" data-jump-section="global" style="overflow: hidden scroll; padding-right: 0px;">
+                
+                <h1 class="text-3xl bold text-white">CHANGE CHANNEL OR SERVER TO GET EXTENSION WORK</h1>
+              </div>
+          </div>`
+        }
+        else if (myres && myres.channels && myres.channels.message && myres.channels.message === "Invalid Form Body") {
+          dom = `
+          <div id="overlay" class="fixed z-[101] w-screen h-screen inset-0 bg-gray-900 bg-opacity-60"></div>
   
-
-        var wrapers = myres.channels.filter(({type}) => type == 4).sort((a,b) => a.position - b.position);
+           <div id="dialog"
+            class="fixed z-[102] top-1/2 left-1/2 -translate-x-1/2 h-5/6 -translate-y-1/2 w-96 bg-black rounded-md px-8 py-6 space-y-5 drop-shadow-lg text-black">
+            <div class="flex justify-start">
+                <button id="close" class="px-3 py-1 bg-indigo-500 hover:bg-indigo-700 text-white dark: cursor-pointer rounded-md">X</button>
+            </div>
+            <h1 class="text-2xl font-semibold text-white">Channels</h1>
+              <div class="scroller-1ox3I2 h-5/6 thin-RnSY0a scrollerBase-1Pkza4 fade-27X6bG customTheme-3QAYZq" orientation="vertical" id="channels" tabindex="0" data-jump-section="global" style="overflow: hidden scroll; padding-right: 0px;">
+              
+              <h1 class="text-3xl bold text-white">IT'S NOT WORKING IN DM</h1>
+            </div>
+        </div>`
+        }
+        else {
+        let wrappers = myres.channels.filter(({type}) => type == 4).sort((a,b) => a.position - b.position);
         myres.channels.sort((a,b) => a.position - b.position);
-        const dom = ` 
+        dom = ` 
           <div id="overlay" class="fixed z-[101] w-screen h-screen inset-0 bg-gray-900 bg-opacity-60"></div>
 
            <div id="dialog"
@@ -25,7 +58,7 @@ function handleButtonClick(event) {
             <h1 class="text-2xl font-semibold text-white">Channels</h1>
               <div class="scroller-1ox3I2 h-5/6 thin-RnSY0a scrollerBase-1Pkza4 fade-27X6bG customTheme-3QAYZq" orientation="vertical" id="channels" tabindex="0" data-jump-section="global" style="overflow: hidden scroll; padding-right: 0px;">
               <ul aria-label="Channels" class="content-yjf30S text-black" >
-                ${wrapers.map((x) => {
+                ${wrappers.map((x) => {
                   var add = `<div class="iconVisibility-3pLDEs wrapper-1S43wv wrapperCommon-I1TMDb clickable-2AoIYN"><div class="mainContent-uDGa6R" tabindex="-1" data-list-item-id="channels___${x.id}" aria-label="${x.name} (category)" aria-expanded="true" role="button"><svg class="arrow-2HswgU icon-3zI3d2" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M16.59 8.59004L12 13.17L7.41 8.59004L6 10L12 16L18 10L16.59 8.59004Z"></path></svg><h3 class="name-3BUDLf container-q97qHp"><div class="overflow-1wOqNV">${x.name}</div></h3></div><div class="children-3MeUvj"></div></div>`
                   myres.channels.filter(({parent_id}) => parent_id === x.id).map((s) => {
                    
@@ -48,26 +81,31 @@ function handleButtonClick(event) {
             </div>
         </div>
         `;
+        }
         const check_dom = document.getElementById("overlay")
         if (check_dom === null)
           to_add.insertAdjacentHTML('beforebegin', dom)
-        var closeButton = document.getElementById('close');
+        const closeButton = document.getElementById('close');
         const closeoverlay = document.getElementById("overlay")
-        closeoverlay.addEventListener('click', function () {
-          const overlay = document.getElementById("overlay")
-          const dialog  = document.getElementById("dialog")
-          dialog.remove()
-          overlay.remove();
-        });
-      
-        closeButton.addEventListener('click', function () {
-          const overlay = document.getElementById("overlay")
-          const dialog  = document.getElementById("dialog")
-          dialog.remove()
-          overlay.remove();
+        if (closeoverlay !== null) {
+          closeoverlay.addEventListener('click', function () {
+            const overlay = document.getElementById("overlay")
+            const dialog  = document.getElementById("dialog")
+            dialog.remove()
+            overlay.remove();
+          });
+        }
+        if (closeButton !== null) {
+          closeButton.addEventListener('click', function () {
+            const overlay = document.getElementById("overlay")
+            const dialog  = document.getElementById("dialog")
+            dialog.remove()
+            overlay.remove();
+          });
+        }
 
-        });
       })();
+
     } 
   }
   document.addEventListener("click", handleButtonClick);

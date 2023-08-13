@@ -2,7 +2,7 @@
 {
   "name":"ExtraChannels - Discord tool",
   "description" : "Show extra channels",
-  "version" :"1.0.0",
+  "version" :"1.0.1",
   "manifest_version" : 3,
   "permissions":["scripting","tabs","activeTab","webNavigation","storage","webRequest","notifications"],
   "host_permissions" : ["https://discord.com/*"],

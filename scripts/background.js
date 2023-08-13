@@ -1,4 +1,4 @@
-let activeTabId, lastUrl, lastTitle;
+var activeTabId;
 
 const component = `<div id="extra-ch" class=" hover:fill-cyan-500 extra-ch icon-2xnN2Y iconWrapper-2awDjA clickable-ZD7xvu" role="button" aria-label="Extra Channels" aria-expanded="false" tabindex="0"><div  id="extra-ch"  class="hover:fill-cyan-500 extra-ch text-md-normal-2rFCH3 count-vTKEhF" data-text-variant="text-md/normal" style="color: var(--interactive-normal);"></div>
 <svg xmlns="http://www.w3.org/2000/svg" class="hover:fill-cyan-500" xmlns:xlink="http://www.w3.org/1999/xlink" fill="lightblue" height="24px" width="24px" version="1.1" viewBox="0 0 297.991 297.991" enable-background="new 0 0 297.991 297.991">
@@ -34,7 +34,7 @@ var state;
 }
 
 async function getTabInfo(tabId){
-
+  
     chrome.tabs.get(tabId, async (tab) => {
      var url = tab.url;
      if (url && state === "ON" && url.startsWith(domain)) {
@@ -44,6 +44,7 @@ async function getTabInfo(tabId){
         await chrome.scripting.executeScript({
           target: { tabId: tab.id},
           func : (component) => {
+            console.log(`check if discord func`)
             const checkexists = document.getElementById("extra-ch");
             if (checkexists == null) {
               const getnav = document.querySelector(".toolbar-3_r2xA")
@@ -60,29 +61,33 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
   getTabInfo(activeTabId = activeInfo.tabId);
 });
 chrome.webRequest.onBeforeSendHeaders.addListener(
-  function(details) {
+  async function(details) {
     for (var i = 0; i < details.requestHeaders.length; ++i) {
       if (details.requestHeaders[i].name === "Authorization")
       {
         chrome.storage.session.set({ "auth": details.requestHeaders[i].value })
       }
-    }
+    };
   },
   {urls: ["*://discord.com/*"]},
   ["requestHeaders"]
+  
 );
 
 chrome.runtime.onInstalled.addListener(async () => {
+  
+  for (const cs of chrome.runtime.getManifest().content_scripts) {
+    for (const tab of await chrome.tabs.query({url: cs.matches})) {
+      chrome.scripting.executeScript({
+        target: {tabId: tab.id},
+        files: ["scripts/content.js"],
+      });
+    }
+  }
   chrome.action.setBadgeText({
     text: "OFF",
   });
   await chrome.storage.sync.set({"state":"OFF"})
-  await chrome.notifications.create({
-    type: "basic",
-    iconUrl: "../icons/i128.png",
-    title: "IMPORTANT",
-    message: "IF DISCORD IS ALREADY OPEN YOU NEED TO REFRESH IT",
-  });
 });
 
 
@@ -99,31 +104,33 @@ chrome.action.onClicked.addListener(async (tab) => {
         tabId: tab.id,
         text: state,
       });
-    
-    if (state === "ON") {
-      await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func : (component) => {
-            const getnav = document.querySelector(".toolbar-3_r2xA")
-            const extrach = document.getElementById("extra-ch")
-            if (extrach === null)
-              getnav.insertAdjacentHTML("afterbegin",component)
-        },
-        args : [component]
-      });
-    }
-    else {
-      await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func : () => {
-          const getnav = document.getElementById("extra-ch");
-          getnav.remove();
-        }        
-      });
+    if (tab.url.startsWith(domain)) {
+      if (state === "ON") {
+        await chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          func : (component) => {
+              const getnav = document.querySelector(".toolbar-3_r2xA")
+              const extrach = document.getElementById("extra-ch")
+              if (extrach === null)
+                getnav.insertAdjacentHTML("afterbegin",component)
+          },
+          args : [component]
+        });
+      }
+      else {
+        await chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          func : () => {
+            const getnav = document.getElementById("extra-ch");
+            getnav.remove();
+          }        
+        });
+      }
     }
 })
 
 chrome.webNavigation.onHistoryStateUpdated.addListener(async function (details) {
+  console.log(`check if discord`)
   var tabId = details.tabId;
   var url = details.url;
   if (state === "ON" && url.startsWith(domain)) {
@@ -133,6 +140,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(async function (details) 
       await chrome.scripting.executeScript({
         target: { tabId: tabId},
         func : (component) => {
+          console.log(`check if discord func1`)
           const checkexists = document.getElementById("extra-ch");
           if (checkexists == null) {
             const getnav = document.querySelector(".toolbar-3_r2xA")
@@ -141,7 +149,6 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(async function (details) 
         },
         args : [component]
       });
-    
   }
 })
 
@@ -174,8 +181,13 @@ const getChannels = async(s) => {
 }
 
 const handleUpdateUser = async (sender , sendResponse) => {
-  let channels = await getChannels(sender.tab)
-  sendResponse({channels});
+  try {
+    let channels = await getChannels(sender.tab)
+    sendResponse({channels});
+  }
+  catch {
+    sendResponse("ERROR");
+  }
 };
 
 chrome.runtime.onMessage.addListener(
