@@ -109,3 +109,50 @@ function handleButtonClick(event) {
     } 
   }
   document.addEventListener("click", handleButtonClick);
+
+
+const component = `<div id="extra-ch" class=" hover:fill-cyan-500 extra-ch icon-2xnN2Y iconWrapper-2awDjA clickable-ZD7xvu" role="button" aria-label="Extra Channels" aria-expanded="false" tabindex="0"><div  id="extra-ch"  class="hover:fill-cyan-500 extra-ch text-md-normal-2rFCH3 count-vTKEhF" data-text-variant="text-md/normal" style="color: var(--interactive-normal);"></div>
+<svg xmlns="http://www.w3.org/2000/svg" class="hover:fill-cyan-500" xmlns:xlink="http://www.w3.org/1999/xlink" fill="lightblue" height="24px" width="24px" version="1.1" viewBox="0 0 297.991 297.991" enable-background="new 0 0 297.991 297.991">
+        <g class="hover:fill-cyan-500">
+          <path class="hover:fill-cyan-500" d="m297.553,74.917c0,0-26.938,7.798-88.522,7.798-24.04,0-45.555,9.563-60.035,24.627-14.481-15.064-35.995-24.627-60.035-24.627-61.584,0-88.522-7.798-88.522-7.798s-4.253,57.773 13.746,100.557c11.491,27.314 40.059,47.6 74.776,47.6 24.04,0 45.555-9.563 60.035-24.627 14.48,15.064 35.995,24.627 60.035,24.627 34.718,0 63.285-20.285 74.776-47.6 17.999-42.783 13.746-100.557 13.746-100.557zm-214.807,90.775c-18.133,0-32.833-16.833-32.833-16.833s14.7-15.833 32.833-15.833c18.133,0 32.833,15.833 32.833,15.833s-14.701,16.833-32.833,16.833zm132.5,0c-18.133,0-32.833-16.833-32.833-16.833s14.7-15.833 32.833-15.833c18.133,0 32.833,15.833 32.833,15.833s-14.701,16.833-32.833,16.833z"></path>
+        </g>
+      </svg>
+</div>`;
+
+const targetDomain= "https://discord.com/channels/";
+var state;
+function urlStartsWithDomain(url, domain) {
+    return url.startsWith(domain);
+}
+
+async function handleDomChanges(mutationsList) {
+    for (const mutation of mutationsList) {
+        if (mutation.type === "childList" || mutation.type === "attributes") {
+            if (urlStartsWithDomain(window.location.href, targetDomain)) {
+              state =  await chrome.runtime.sendMessage({response:"getState"});
+              if (state === "ON")
+              {
+                const checkexists = document.getElementById("extra-ch");
+                if (checkexists == null) {
+                  const getnav = document.querySelector(".toolbar-3_r2xA")
+                  getnav.insertAdjacentHTML("afterbegin",component)
+                }
+              }
+            }
+        }
+    }
+}
+
+const observer = new MutationObserver(handleDomChanges);
+
+const observerOptions = {
+    childList: true,
+    attributes: true,
+    subtree: true,
+};
+
+observer.observe(document.body, observerOptions);
+
+if (urlStartsWithDomain(window.location.href, targetDomain)) {
+    console.log("Initial URL starts with the target domain.");
+}
