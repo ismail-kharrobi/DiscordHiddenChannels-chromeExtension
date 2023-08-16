@@ -20,10 +20,10 @@ var state;
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       func : (component) => {
-          // const getnav = document.querySelector(".toolbar-3_r2xA")
-          // const extrach = document.getElementById("extra-ch")
-          // if (extrach === null)
-          //   getnav.insertAdjacentHTML("afterbegin",component)
+          const getnav = document.querySelector(".toolbar-3_r2xA")
+          const extrach = document.getElementById("extra-ch")
+          if (extrach === null)
+            getnav.insertAdjacentHTML("afterbegin",component)
       },
       args : [component]
     });
