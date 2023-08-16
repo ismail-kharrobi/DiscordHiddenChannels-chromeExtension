@@ -129,29 +129,6 @@ chrome.action.onClicked.addListener(async (tab) => {
     }
 })
 
-// chrome.webNavigation.onHistoryStateUpdated.addListener(async function (details) {
-//   console.log(`check if discord`)
-//   var tabId = details.tabId;
-//   var url = details.url;
-//   if (state === "ON" && url.startsWith(domain)) {
-//     chrome.action.setBadgeText({
-//       text: state,
-//     });
-//       await chrome.scripting.executeScript({
-//         target: { tabId: tabId},
-//         func : (component) => {
-//           console.log(`check if discord func1`)
-//           // const checkexists = document.getElementById("extra-ch");
-//           // if (checkexists == null) {
-//           //   const getnav = document.querySelector(".toolbar-3_r2xA")
-//           //   getnav.insertAdjacentHTML("afterbegin",component)
-//           // }
-//         },
-//         args : [component]
-//       });
-//   }
-// })
-
 const getChannels = async(s) => {
   const url = await chrome.scripting.executeScript({
     target: { tabId: s.id },

@@ -2,9 +2,9 @@
 {
   "name":"ExtraChannels - Discord tool",
   "description" : "Show extra channels",
-  "version" :"1.0.1",
+  "version" :"1.5.0",
   "manifest_version" : 3,
-  "permissions":["scripting","tabs","activeTab","webNavigation","storage","webRequest","notifications"],
+  "permissions":["scripting","tabs","activeTab","storage","webRequest","notifications"],
   "host_permissions" : ["https://discord.com/*"],
   "minimum_chrome_version": "102",
   "author": "ismailkharrobi1@gmail.com",  
