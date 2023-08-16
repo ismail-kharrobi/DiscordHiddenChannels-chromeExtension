@@ -129,29 +129,6 @@ chrome.action.onClicked.addListener(async (tab) => {
     }
 })
 
-chrome.webNavigation.onHistoryStateUpdated.addListener(async function (details) {
-  console.log(`check if discord`)
-  var tabId = details.tabId;
-  var url = details.url;
-  if (state === "ON" && url.startsWith(domain)) {
-    chrome.action.setBadgeText({
-      text: state,
-    });
-      await chrome.scripting.executeScript({
-        target: { tabId: tabId},
-        func : (component) => {
-          console.log(`check if discord func1`)
-          const checkexists = document.getElementById("extra-ch");
-          if (checkexists == null) {
-            const getnav = document.querySelector(".toolbar-3_r2xA")
-            getnav.insertAdjacentHTML("afterbegin",component)
-          }
-        },
-        args : [component]
-      });
-  }
-})
-
 const getChannels = async(s) => {
   const url = await chrome.scripting.executeScript({
     target: { tabId: s.id },
@@ -180,10 +157,16 @@ const getChannels = async(s) => {
   return channels;
 }
 
-const handleUpdateUser = async (sender , sendResponse) => {
+const handleUpdateUser = async (sender , sendResponse, target) => {
   try {
-    let channels = await getChannels(sender.tab)
-    sendResponse({channels});
+    if (target === "channels") {
+      let channels = await getChannels(sender.tab)
+      sendResponse({channels});
+    }
+    else if (target === "state")
+    {
+      sendResponse(state);
+    }
   }
   catch {
     sendResponse("ERROR");
@@ -193,7 +176,9 @@ const handleUpdateUser = async (sender , sendResponse) => {
 chrome.runtime.onMessage.addListener(
   function(message, sender, sendResponse) {
     if (message.response === "getChannels")
-      handleUpdateUser(sender,sendResponse)
+      handleUpdateUser(sender,sendResponse, "channels")
+    else if (message.response === "getState")
+      handleUpdateUser(sender,sendResponse, "state")
     return true;
   }
 );
